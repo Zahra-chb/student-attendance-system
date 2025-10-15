@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance List</title>
+  <link rel="stylesheet" href="serie1.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="attendance.html">Attendance List</a>
+    <a href="add-student.html">Add Student</a>
+    <a href="#">Reports</a>
+    <a href="#">Logout</a>
+  </nav>
+
+  <h2>Student Attendance</h2>
+
+  <table>
+    <tr>
+      <th>Student ID</th>
+      <th>Last Name</th>
+      <th>First Name</th>
+      <th>Course</th>
+      <th>Present</th>
+      <th>Participated</th>
+      <th>Session Date</th>
+    </tr>
+    <tr>
+      <td>001</td>
+      <td>Benali</td>
+      <td>Sara</td>
+      <td>Web Programming</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>2025-10-10</td>
+    </tr>
+    <tr>
+      <td>002</td>
+      <td>Khelifi</td>
+      <td>Ahmed</td>
+      <td>Web Programming</td>
+      <td>No</td>
+      <td>No</td>
+      <td>2025-10-10</td>
+    </tr>
+  </table>
+  
+  <h2>Add a New Student</h2>
+
+  <form>
+    <label>Student ID:</label>
+    <input type="text" required>
+
+    <label>Last Name:</label>
+    <input type="text" required>
+
+    <label>First Name:</label>
+    <input type="text" required>
+
+    <label>Email:</label>
+    <input type="email" required>
+
+    <button type="submit">Submit</button>
+  </form>
+
+</body>
+</html>

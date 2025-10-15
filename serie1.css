@@ -1,0 +1,134 @@
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #FFF8F5;
+  color: #3E2E2E;
+  margin: 0;
+  padding: 0;
+}
+
+nav {
+  background-color: #F4D8CD;
+  color: #3E2E2E;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #EBD3CA;
+}
+
+nav a {
+  color: #D76C82;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #B94F69;
+}
+
+h1, h2 {
+  text-align: center;
+  color: #B94F69;
+  margin-top: 25px;
+  letter-spacing: 0.5px;
+}
+
+table {
+  width: 90%;
+  margin: 25px auto;
+  border-collapse: collapse;
+  background-color: #FFFFFF;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+th, td {
+  border: 1px solid #F1E1DB;
+  padding: 12px;
+  text-align: center;
+  color: #3E2E2E;
+  font-size: 15px;
+}
+
+th {
+  background-color: #F2B6A0;
+  color: #fff;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background-color: #FFF1EE;
+}
+
+form {
+  background-color: #FFFFFF;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  width: 90%;
+  max-width: 400px;
+  margin: 30px auto;
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 500;
+  color: #3E2E2E;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #EAD1C8;
+  border-radius: 8px;
+  background-color: #FFF8F7;
+  color: #3E2E2E;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #E2909C;
+  background-color: #FFF2F1;
+}
+
+button {
+  background-color: #E2909C;
+  color: white;
+  border: none;
+  padding: 12px;
+  margin-top: 18px;
+  width: 100%;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background-color: #D76C82;
+  transform: translateY(-2px);
+}
+
+@media (min-width: 768px) {
+  table {
+    width: 80%;
+  }
+  form {
+    width: 400px;
+  }
+}
+
+@media (min-width: 1024px) {
+  nav {
+    justify-content: space-evenly;
+  }
+  body {
+    padding: 30px;
+  }
+}
