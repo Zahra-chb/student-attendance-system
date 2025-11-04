@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serie 2 – Attendance System</title>
+  <link rel="stylesheet" href="serie1.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">📘 AttendanceApp</div>
+    <nav>
+      <a href="serie1.html">Home</a>
+      <a href="serie2.html" class="active">Attendance</a>
+      <a href="#add-student">Add Student</a>
+      <a href="#report">Reports</a>
+      <a href="#">Logout</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Student Attendance – JavaScript Version</h1>
+
+    <!-- Table -->
+    <section class="card">
+      <table id="attendanceTable">
+        <thead>
+          <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th colspan="6">Sessions (S1–S6)</th>
+            <th colspan="6">Participation (P1–P6)</th>
+            <th>Absences</th>
+            <th>Participation Count</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ahmed</td><td>Sara</td>
+            <td contenteditable="true">✓</td><td contenteditable="true">✓</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+            <td contenteditable="true">✓</td><td contenteditable="true">✓</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+            <td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td>Yacine</td><td>Ali</td>
+            <td contenteditable="true">✓</td><td contenteditable="true"></td><td contenteditable="true">✓</td><td contenteditable="true">✓</td><td contenteditable="true">✓</td><td contenteditable="true">✓</td>
+            <td contenteditable="true">✓</td><td contenteditable="true"></td><td contenteditable="true">✓</td><td contenteditable="true">✓</td><td contenteditable="true">✓</td><td contenteditable="true">✓</td>
+            <td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td>Houcine</td><td>Rania</td>
+            <td contenteditable="true">✓</td><td contenteditable="true">✓</td><td contenteditable="true"></td><td contenteditable="true">✓</td><td contenteditable="true">✓</td><td contenteditable="true"></td>
+            <td contenteditable="true">✓</td><td contenteditable="true">✓</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>
+            <td></td><td></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+      <button id="updateBtn" class="btn">Update Table</button>
+    </section>
+
+    <!-- Add Student -->
+    <section id="add-student" class="card">
+      <h2>Add New Student</h2>
+      <form id="studentForm" class="form">
+        <input type="text" id="studentId" placeholder="Student ID" />
+        <input type="text" id="lastName" placeholder="Last Name" />
+        <input type="text" id="firstName" placeholder="First Name" />
+        <input type="email" id="email" placeholder="Email" />
+        <button type="submit" class="btn">Add Student</button>
+      </form>
+      <p id="formMessage" class="msg"></p>
+    </section>
+
+    <!-- Report -->
+    <section id="report" class="card">
+      <h2>Attendance Report</h2>
+      <div id="reportData"></div>
+    </section>
+  </main>
+
+  <footer>© 2025 Advanced Web Programming – Serie 2</footer>
+
+  <script src="serie2.js"></script>
+</body>
+</html>
