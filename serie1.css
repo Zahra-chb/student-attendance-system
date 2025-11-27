@@ -1,19 +1,17 @@
-body { font-family: Arial, sans-serif; background:#f2f2f2; margin:0; }
-.navbar { display:flex; justify-content:space-between; align-items:center; background:#001125; color:#fff; padding:10px 20px; }
-.navbar a { color:#fff; text-decoration:none; margin-left:15px; }
-.navbar a.active { text-decoration:underline; }
-.container { max-width:1200px; margin:20px auto; }
-.card { background:#fff; padding:15px; margin-bottom:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-table { width:100%; border-collapse:collapse; margin-top:10px; }
-th, td { border:1px solid #ddd; padding:6px; text-align:center; font-size:14px; }
-th { background:#001125; color:#fff; font-size:14px; }
-.green { background:#d4edda; }
-.yellow { background:#fff3cd; }
-.red { background:#f8d7da; }
-.excellent { background:#cce5ff; animation:fade 1s infinite alternate; }
-@keyframes fade { from {opacity:0.5;} to {opacity:1;} }
-.hovered { background:#e0e0e0; }
-.btn { background:#001125; color:#fff; border:none; padding:6px 10px; border-radius:5px; cursor:pointer; margin:3px; font-size:13px; }
-.btn:hover { background:#003366; }
-input { padding:5px; margin:5px 3px; border-radius:4px; border:1px solid #ccc; font-size:13px; }
-canvas { max-width:300px; max-height:300px; display:block; margin:0 auto; }
+/* série1.css — design propre simple */
+:root{--main:#001125;--accent:#007bff;--muted:#f4f6f8}
+*{box-sizing:border-box}
+body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--muted);margin:0;color:#222}
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--main);color:#fff}
+.navbar .logo{font-weight:700}
+.navbar nav a{color:#fff;text-decoration:none;margin-left:14px;padding:6px 8px;border-radius:6px}
+.navbar nav a:hover{background:rgba(255,255,255,0.05)}
+.container{max-width:1100px;margin:24px auto;padding:16px}
+.card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin-bottom:16px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border:1px solid #eee;text-align:center;font-size:14px}
+th{background:var(--main);color:#fff}
+.btn{background:var(--main);color:#fff;padding:8px 12px;border:none;border-radius:8px;cursor:pointer}
+.form input, .form select{padding:8px;width:100%;margin:6px 0;border-radius:6px;border:1px solid #ddd}
+.footer{text-align:center;padding:12px;color:#666}
+@media (max-width:768px){.container{padding:8px} table{font-size:12px}}
