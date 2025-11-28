@@ -17,6 +17,7 @@ $role = $_SESSION['role'] ?? '';
       <a href="prof_home.php">Home</a>
       <a href="create_session.php">Create Session</a>
       <a href="list_sessions.php">My Sessions</a>
+      
     <?php elseif($role == 'student'): ?>
       <a href="student_home.php">Home</a>
       <a href="my_attendance.php">My Attendance</a>

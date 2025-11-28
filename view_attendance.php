@@ -1,34 +1,102 @@
 <?php
 session_start();
 require_once "db_connect.php";
-if(!isset($_SESSION['role']) || $_SESSION['role']!='professor'){ header("Location: login.php"); exit(); }
+if(!isset($_SESSION['role']) || $_SESSION['role']!='student'){ 
+    header("Location: login.php"); 
+    exit(); 
+}
 include "navbar.php";
-$sid = isset($_GET['session_id']) ? (int)$_GET['session_id'] : 0;
-$stmt = $conn->prepare("SELECT s.*, c.name as course_name FROM attendance_sessions s LEFT JOIN courses c ON s.course_id=c.id WHERE s.id=?");
-$stmt->bind_param("i",$sid);
-$stmt->execute();
-$session = $stmt->get_result()->fetch_assoc();
-if(!$session){ echo "Session not found."; exit(); }
-$records = $conn->prepare("SELECT ar.*, st.first_name, st.last_name, st.matricule FROM attendance_records ar JOIN students st ON ar.student_id=st.id WHERE ar.session_id=?");
-$records->bind_param("i",$sid);
-$records->execute();
-$res = $records->get_result();
+
+$student_id = $_SESSION['user_id'];
+$course_id = isset($_GET['course_id']) ? (int)$_GET['course_id'] : 0;
+
+if($course_id == 0) {
+    header("Location: student_home.php");
+    exit();
+}
+
+// Vérifier que l'étudiant est inscrit à ce cours
+$course_check = $conn->prepare("
+    SELECT c.* FROM courses c 
+    JOIN student_courses sc ON c.id = sc.course_id
+    WHERE c.id = ? AND sc.student_id = ?
+    LIMIT 1
+");
+$course_check->bind_param("ii", $course_id, $student_id);
+$course_check->execute();
+$course = $course_check->get_result()->fetch_assoc();
+
+if(!$course){
+    echo "<div class='container'><p>Course not found or you are not enrolled.</p><a href='student_home.php'>Back</a></div>";
+    exit();
+}
+
+// Récupérer toutes les sessions pour ce cours
+$sessions_query = $conn->prepare("
+    SELECT s.id, s.date, s.group_id,
+           ar.status, ar.justification_path,
+           CASE 
+               WHEN ar.status = 'present' THEN '✅ Present'
+               WHEN ar.status = 'absent' THEN '❌ Absent' 
+               ELSE '⏳ Not marked'
+           END as status_display
+    FROM attendance_sessions s 
+    LEFT JOIN attendance_records ar ON s.id = ar.session_id AND ar.student_id = ?
+    WHERE s.course_id = ? AND s.group_id = (SELECT group_id FROM students WHERE id = ?)
+    ORDER BY s.date DESC
+");
+$sessions_query->bind_param("iii", $student_id, $course_id, $student_id);
+$sessions_query->execute();
+$sessions = $sessions_query->get_result();
 ?>
-<!doctype html><html><head><meta charset="utf-8"><title>Session Records</title></head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance - <?= htmlspecialchars($course['name']) ?></title>
+    <link rel="stylesheet" href="serie1.css">
+</head>
+<body>
 <main class="container">
-  <h2>Session: <?=htmlspecialchars($session['course_name'])?> — <?= $session['date'] ?></h2>
-  <table class="table">
-    <thead><tr><th>Matricule</th><th>Name</th><th>Status</th></tr></thead>
-    <tbody>
-    <?php while($r=$res->fetch_assoc()): ?>
-      <tr>
-        <td><?=htmlspecialchars($r['matricule'])?></td>
-        <td><?=htmlspecialchars($r['first_name'].' '.$r['last_name'])?></td>
-        <td><?=htmlspecialchars($r['status'])?></td>
-      </tr>
-    <?php endwhile;?>
-    </tbody>
-  </table>
-  <a class="btn" href="list_sessions.php">Back</a>
+    <div class="page-header">
+        <h1><?= htmlspecialchars($course['name']) ?> - Attendance Details</h1>
+        <a href="student_home.php" class="btn">Back to Dashboard</a>
+    </div>
+
+    <section class="card">
+        <h2>Your Attendance Records</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Group</th>
+                    <th>Status</th>
+                    <th>Justification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while($session = $sessions->fetch_assoc()): ?>
+                <tr>
+                    <td><?= htmlspecialchars($session['date']) ?></td>
+                    <td>Group <?= htmlspecialchars($session['group_id']) ?></td>
+                    <td>
+                        <span class="status-badge status-<?= $session['status'] ?? 'unknown' ?>">
+                            <?= $session['status_display'] ?>
+                        </span>
+                    </td>
+                    <td>
+                        <?php if($session['justification_path']): ?>
+                            <a href="<?= htmlspecialchars($session['justification_path']) ?>" target="_blank">📎 View File</a>
+                        <?php else: ?>
+                            <span style="color: #666;">-</span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </section>
 </main>
-</body></html>
+</body>
+</html>

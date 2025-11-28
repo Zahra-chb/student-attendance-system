@@ -1,64 +1,109 @@
 <?php
 session_start();
 require_once "db_connect.php";
-if(!isset($_SESSION['role']) || $_SESSION['role']!='student'){ header("Location: login.php"); exit(); }
+if(!isset($_SESSION['role']) || $_SESSION['role']!='student'){ 
+    header("Location: login.php"); 
+    exit(); 
+}
 include "navbar.php";
+
 $student_id = $_SESSION['user_id'];
 $course_id = isset($_GET['course_id']) ? (int)$_GET['course_id'] : 0;
 
-if(!$course_id){
-  header("Location: student_home.php"); exit();
-}
-
-// fetch sessions
-$stmt = $conn->prepare("SELECT s.id,s.date FROM attendance_sessions s WHERE s.course_id=? ORDER BY s.date");
-$stmt->bind_param("i",$course_id);
-$stmt->execute(); $sessions = $stmt->get_result();
-
-// handle justification upload
-$msg='';
-if($_SERVER['REQUEST_METHOD']=='POST' && isset($_FILES['just_file'])){
-  $session_id = (int)$_POST['session_id'];
-  $f = $_FILES['just_file'];
-  if($f['error']===0){
-    $ext = pathinfo($f['name'], PATHINFO_EXTENSION);
-    $target = "uploads/just_".$student_id."_".$session_id.".". $ext;
-    move_uploaded_file($f['tmp_name'],$target);
-    $stmtu = $conn->prepare("UPDATE attendance_records SET justification_path=? WHERE session_id=? AND student_id=?");
-    $stmtu->bind_param("sii",$target,$session_id,$student_id);
-    $stmtu->execute();
-    $msg = "Justification uploaded.";
-  } else $msg = "Upload error.";
-}
-?>
-<!doctype html><html><head><meta charset="utf-8"><title>My Attendance</title></head><body>
-<main class="container">
-  <h2>Attendance for course</h2>
-  <?php if($msg) echo "<p class='ok'>$msg</p>"; ?>
-  <table class="table">
-    <thead><tr><th>Date</th><th>Status</th><th>Justification</th><th>Upload</th></tr></thead>
-    <tbody>
-    <?php while($s=$sessions->fetch_assoc()):
-      $stmt2 = $conn->prepare("SELECT status,justification_path FROM attendance_records WHERE session_id=? AND student_id=?");
-      $stmt2->bind_param("ii",$s['id'],$student_id);
-      $stmt2->execute(); $rec = $stmt2->get_result()->fetch_assoc();
-      $status = $rec['status'] ?? 'Not marked';
-      $just = $rec['justification_path'] ?? '';
+// ⭐⭐ MODIFICATION : Si aucun cours spécifié, montrer la liste des cours ⭐⭐
+if($course_id == 0) {
+    // Récupérer tous les cours de l'étudiant
+    $courses_query = $conn->prepare("
+        SELECT c.id, c.name,
+               COUNT(s.id) as session_count,
+               SUM(CASE WHEN ar.status='present' THEN 1 ELSE 0 END) as present_count
+        FROM courses c 
+        JOIN student_courses sc ON c.id = sc.course_id
+        LEFT JOIN attendance_sessions s ON c.id = s.course_id AND s.group_id = (SELECT group_id FROM students WHERE id = ?)
+        LEFT JOIN attendance_records ar ON s.id = ar.session_id AND ar.student_id = ?
+        WHERE sc.student_id = ?
+        GROUP BY c.id
+        ORDER BY c.name
+    ");
+    $courses_query->bind_param("iii", $student_id, $student_id, $student_id); // ← 3 paramètres
+    $courses_query->execute();
+    $courses = $courses_query->get_result();
     ?>
-      <tr>
-        <td><?=htmlspecialchars($s['date'])?></td>
-        <td><?=htmlspecialchars($status)?></td>
-        <td><?= $just ? "<a href='".htmlspecialchars($just)."' target='_blank'>View</a>" : '-' ?></td>
-        <td>
-          <form method="post" enctype="multipart/form-data">
-            <input type="hidden" name="session_id" value="<?=$s['id']?>">
-            <input type="file" name="just_file" accept=".pdf,.jpg,.png">
-            <button type="submit">Upload</button>
-          </form>
-        </td>
-      </tr>
-    <?php endwhile;?>
-    </tbody>
-  </table>
-</main>
-</body></html>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Attendance</title>
+        <link rel="stylesheet" href="serie1.css">
+        <style>
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .course-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #001125;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .course-card h3 {
+            margin: 0 0 10px 0;
+            color: #001125;
+        }
+        </style>
+    </head>
+    <body>
+    <main class="container">
+        <div class="page-header">
+            <h1>My Attendance</h1>
+            <a href="student_home.php" class="btn">Back to Dashboard</a>
+        </div>
+
+        <section class="card">
+            <h2>Select a Course to View Attendance</h2>
+            <div class="courses-grid">
+                <?php while($course = $courses->fetch_assoc()): 
+                    $attendance_rate = $course['session_count'] > 0 ? 
+                        round(($course['present_count'] / $course['session_count']) * 100, 1) : 0;
+                ?>
+                <div class="course-card">
+                    <h3><?= htmlspecialchars($course['name']) ?></h3>
+                    <p>Sessions: <?= $course['session_count'] ?></p>
+                    <p>Attendance: <?= $attendance_rate ?>%</p>
+                    <a href="view_attendance.php?course_id=<?= $course['id'] ?>" class="btn btn-primary">View Attendance</a>
+                </div>
+                <?php endwhile; ?>
+            </div>
+            
+            <?php if($courses->num_rows == 0): ?>
+                <p>You are not enrolled in any courses yet.</p>
+            <?php endif; ?>
+        </section>
+    </main>
+    </body>
+    </html>
+    <?php
+    exit(); // Arrêter l'exécution ici
+}
+
+// ⭐⭐ CORRECTION : Changer la vérification du cours pour utiliser student_courses ⭐⭐
+$course_check = $conn->prepare("
+    SELECT c.* FROM courses c 
+    JOIN student_courses sc ON c.id = sc.course_id
+    WHERE c.id = ? AND sc.student_id = ?
+    LIMIT 1
+");
+$course_check->bind_param("ii", $course_id, $student_id);
+$course_check->execute();
+$course = $course_check->get_result()->fetch_assoc();
+
+if(!$course){
+    echo "<div class='container'><p>Course not found or you are not enrolled.</p><a href='my_attendance.php'>Back to Courses</a></div>";
+    exit();
+}
+
+// Le reste de votre code...
